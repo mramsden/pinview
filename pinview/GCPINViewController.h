@@ -29,6 +29,7 @@ typedef enum {
 } GCPINViewControllerMode;
 
 typedef BOOL (^GCPasscodeVerifyBlock) (NSString *code);
+typedef void (^GCPinViewControllerCompleteBlock) (void);
 
 /*
  
@@ -69,6 +70,14 @@ typedef BOOL (^GCPasscodeVerifyBlock) (NSString *code);
  
  */
 @property (nonatomic, copy) GCPasscodeVerifyBlock verifyBlock;
+
+/*
+ 
+ Called when the passcode has been passed and verified. Assuming it is correct
+ this allows you to swap view controllers and so on.
+ 
+ */
+@property (nonatomic, copy) GCPinViewControllerCompleteBlock completeBlock;
 
 /*
  

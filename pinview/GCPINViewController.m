@@ -51,6 +51,7 @@
 @synthesize mode = __mode;
 @synthesize text = __text;
 @synthesize verifyBlock = __verifyBlock;
+@synthesize completeBlock = __completeBlock;
 
 #pragma mark - object methods
 - (id)initWithNibName:(NSString *)nib bundle:(NSBundle *)bundle mode:(GCPINViewControllerMode)mode {
@@ -89,6 +90,7 @@
     self.labels = nil;
     self.text = nil;
     self.verifyBlock = nil;
+    self.completeBlock = nil;
 	
     // super
     [super dealloc];
@@ -127,6 +129,9 @@
     dispatch_after(time, dispatch_get_main_queue(), ^(void){
         [self dismissModalViewControllerAnimated:YES];
         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+        if (self.completeBlock) {
+            self.completeBlock();
+        }
     });
 }
 
@@ -172,7 +177,7 @@
 }
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)orientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        return UIInterfaceOrientationIsLandscape(orientation);
+        return YES;
     }
     else {
         return (orientation == UIInterfaceOrientationPortrait);
