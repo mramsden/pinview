@@ -127,7 +127,8 @@
     __dismiss = YES;
     dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, kGCPINViewControllerDelay * NSEC_PER_SEC);
     dispatch_after(time, dispatch_get_main_queue(), ^(void){
-        [self dismissModalViewControllerAnimated:YES];
+//        [self dismissModalViewControllerAnimated:YES];
+        [__inputField resignFirstResponder];
         [[UIApplication sharedApplication] endIgnoringInteractionEvents];
         if (self.completeBlock) {
             self.completeBlock();
