@@ -30,6 +30,7 @@ typedef enum {
 
 typedef BOOL (^GCPasscodeVerifyBlock) (NSString *code);
 typedef void (^GCPinViewControllerCompleteBlock) (void);
+typedef void (^GCPinViewControllerCancelBlock) (void);
 
 /*
  
@@ -81,6 +82,13 @@ typedef void (^GCPinViewControllerCompleteBlock) (void);
 
 /*
  
+ Called when cancel navigation item is pressed.
+ 
+ */
+@property (nonatomic, copy) GCPinViewControllerCancelBlock cancelBlock;
+
+/*
+ 
  Refer to `GCPINViewControllerMode`. This can only be set through the
  designated initializer.
  
@@ -112,5 +120,5 @@ typedef void (^GCPinViewControllerCompleteBlock) (void);
 @property (nonatomic, retain) IBOutlet UILabel *messageLabel;
 @property (nonatomic, retain) IBOutlet UILabel *errorLabel;
 @property (nonatomic, retain) IBOutlet UITextField *inputField;
-
+@property (nonatomic, retain) IBOutlet UIButton * cancelButton;
 @end

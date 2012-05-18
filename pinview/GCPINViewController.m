@@ -9,7 +9,7 @@
 #import "GCPINViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 
-#define kGCPINViewControllerDelay 0.3
+#define kGCPINViewControllerDelay 0.4
 
 @interface GCPINViewController ()
 
@@ -32,7 +32,7 @@
 - (void)wrong;
 
 // dismiss the view after a set delay
-- (void)dismiss;
+- (void)dismiss:(id) sender;
 
 @end
 
@@ -52,6 +52,8 @@
 @synthesize text = __text;
 @synthesize verifyBlock = __verifyBlock;
 @synthesize completeBlock = __completeBlock;
+@synthesize cancelBlock = __cancelBlock;
+@synthesize cancelButton = __cancelButton;
 
 #pragma mark - object methods
 - (id)initWithNibName:(NSString *)nib bundle:(NSBundle *)bundle mode:(GCPINViewControllerMode)mode {
@@ -122,24 +124,31 @@
     self.text = nil;
     [self resetInput];
 }
-- (void)dismiss {
-    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-    __dismiss = YES;
-    dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, kGCPINViewControllerDelay * NSEC_PER_SEC);
-    dispatch_after(time, dispatch_get_main_queue(), ^(void){
-//        [self dismissModalViewControllerAnimated:YES];
-        [__inputField resignFirstResponder];
-        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-        if (self.completeBlock) {
-            self.completeBlock();
-        }
-    });
+
+- (void)dismiss:(id) sender {
+
+        [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+        __dismiss = YES;
+        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, kGCPINViewControllerDelay * NSEC_PER_SEC);
+        dispatch_after(time, dispatch_get_main_queue(), ^(void){
+    //        [self dismissModalViewControllerAnimated:YES];
+            [__inputField resignFirstResponder];
+            [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+            
+            if( sender == nil){
+                if (self.completeBlock) self.completeBlock();
+            }else {
+                // Cancel button pressed.
+                if (self.cancelBlock) self.cancelBlock();
+            }
+        });
+
 }
 
 #pragma mark - view lifecycle
 - (void)viewDidLoad {
 	[super viewDidLoad];
-    
+
     // setup labels list
     self.labels = [NSArray arrayWithObjects:
                    self.fieldOneLabel,
@@ -162,6 +171,8 @@
     self.inputField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.inputField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     [self.inputField becomeFirstResponder];
+    
+    [self.cancelButton addTarget:self action:@selector(dismiss:) forControlEvents:UIControlEventTouchUpInside];
 	
 }
 - (void)viewDidUnload {
@@ -211,7 +222,7 @@
                 else {
                     if ([self.text isEqualToString:self.inputField.text] &&
                         self.verifyBlock(self.inputField.text)) {
-                        [self dismiss];
+                        [self dismiss:nil];
                     }
                     else {
                         [self wrong];
@@ -220,7 +231,7 @@
             }
             else if (self.mode == GCPINViewControllerModeVerify) {
                 if (self.verifyBlock(self.inputField.text)) {
-                    [self dismiss];
+                    [self dismiss:nil];
                 }
                 else {
                     [self wrong];
